@@ -1,0 +1,5 @@
+Part 3
+Observation:
+Adding the pthreads takes more time. Even though
+it is run in parallel, the process may faceseveral problems (memory size
+limits...).
