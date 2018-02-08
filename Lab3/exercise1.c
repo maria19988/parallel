@@ -19,21 +19,21 @@ void *calculatePI(void *ignored)
          x = -1 + (i + 0.5f) * h;
          partial_sum += sqrt(1.0 - x*x) * h;
     }
-	pthread_mutex_lock(&amp;lock);
+	pthread_mutex_lock(&lock);
 	PI += partial_sum; 
-	pthread_mutex_unlock(&amp;lock);
+	pthread_mutex_unlock(&lock);
 	return 0;
 }
  
 int main(int argc, char **argv) {
  
 	pthread_t threads[NUM_THREADS];
-	int tNum[NUM_THREADS], i;
-	pthread_mutex_init(&amp;lock, NULL);
+	int array[NUM_THREADS], i;
+	pthread_mutex_init(&lock, NULL);
 	for ( i = 0; i &lt; NUM_THREADS; ++i ) 
 	{
-		tNum[i] = i;
-		pthread_create(&amp;threads[i], NULL, calculatePI, (void)&amp;tNum[i]);            
+		array[i] = i;
+		pthread_create(&threads[i], NULL, calculatePI, (void)&array[i]);            
 	}
     for ( i = 0; i &lt; NUM_THREADS; ++i ) 
 	{
@@ -41,6 +41,6 @@ int main(int argc, char **argv) {
 	}
 	PI *= 2.0;
 	printf("Computed value of Pi: %12.9f\n", PI );
-	pthread_mutex_destroy(&amp;lock);
+	pthread_mutex_destroy(&lock);
 	return 0;
 }
