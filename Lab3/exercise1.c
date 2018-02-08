@@ -14,7 +14,7 @@ void *calculatePI(void *ignored)
 	double partial_sum = 0.0, x;&nbsp;
  
   
-    for (int i = myNum; i &lt; STEPS; i += NUM_THREADS)
+    for (int i = myNum; i< STEPS; i += NUM_THREADS)
 	{
          x = -1 + (i + 0.5f) * h;
          partial_sum += sqrt(1.0 - x*x) * h;
@@ -30,12 +30,12 @@ int main(int argc, char **argv) {
 	pthread_t threads[NUM_THREADS];
 	int array[NUM_THREADS], i;
 	pthread_mutex_init(&lock, NULL);
-	for ( i = 0; i &lt; NUM_THREADS; ++i ) 
+	for ( i = 0; i <NUM_THREADS; ++i ) 
 	{
 		array[i] = i;
 		pthread_create(&threads[i], NULL, calculatePI, (void)&array[i]);            
 	}
-    for ( i = 0; i &lt; NUM_THREADS; ++i ) 
+    for ( i = 0; i < NUM_THREADS; ++i ) 
 	{
 		pthread_join(threads[i], NULL);
 	}
