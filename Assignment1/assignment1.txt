@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
+#define MAXCHAR 1000
+#define MAX 10000000
+
+pthread_mutex_t mutex;
+pthread_cond_t condc,condp;
+int buffer=0;
+struct list{
+	char *string;
+	struct list *next;
+};
+
+typedef struct list LIST;
+
+void* producer(void *ptr)
+{
+	char * pch;
+	int i;
+	FILE *fp;
+	char str[MAXCHAR];
+	LIST *current, *head;
+	head = current = NULL;
+	char* filename = "helper";
+	fp = fopen(filename, "r");
+	for(i=0; i<=MAX; i++)
+	{
+		pthread_mutex_lock(&mutex);
+		while(buffer!=0)
+			pthread_cond_wait(&condp, &mutex);
+	
+	if (fp == NULL){
+		printf("Could not open file %s",filename);
+		return 1;
+	}
+	while (fgets(str, MAXCHAR, fp) != NULL)
+	{
+		pch = strtok (str, " ");
+		while(pch!=NULL){
+			printf("%s ", pch);
+			LIST *node = malloc(sizeof(LIST));
+			node->string=strdup(pch);
+			node->next=NULL;
+
+			if(head==NULL){
+			current=head=node;
+			}else{
+			current=current->next=node;
+			}
+			pch=strtok(NULL, " ");
+			
+		}
+	}
+	buffer=i;
+	pthread_cond_signal(&condc);
+	pthread_mutex_unlock(&mutex);
+	}
+	fclose(fp);
+
+
+
+	return 0;
+
+}
