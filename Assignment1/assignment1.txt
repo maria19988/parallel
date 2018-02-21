@@ -8,12 +8,33 @@
 pthread_mutex_t mutex;
 pthread_cond_t condc,condp;
 int buffer=0;
+
 struct list{
-	char *string;
+	int *string;
 	struct list *next;
 };
 
 typedef struct list LIST;
+
+double average;
+
+int calculate(void *list1)
+{
+int i; //counter
+int *elements = (int*)list1;
+for(i=0; i<MAX; i++)
+{
+	list_t *current=LIST->head;
+	average = current->string;
+	while(current!=NULL)
+	{
+		average+=current->string;
+		current=current->next;	
+	}
+	average=average/MAX;
+	return average;
+}
+}
 
 void* producer(void *ptr)
 {
@@ -61,6 +82,42 @@ void* producer(void *ptr)
 
 
 
-	return 0;
+	pthread_exit(0);
 
 }
+void* consumer(void *ignored)
+{
+	int i;
+	for(i=1; i<=MAX; i++){
+		pthread_mutex_lock(&mutex);
+		while(buffer==0)
+			pthread_cond_wait(&condc, &mutex);
+		double average=calculate(LIST);
+		prints("The average is: %f\n",average);
+		buffer=0;
+		pthread_cond_signal(&condp);
+		pthread_mutex_unlock(&mutex);
+
+	}
+	pthread_exit(average);
+}
+
+int main(int argc, char **argv)
+{
+	pthread_t prod, cons;
+	pthread_mutex_init(&mutex, NULL);
+	pthread_cond_init(&condc, NULL);
+	pthread_cond_init(&condp, NULL);
+
+	pthread_create(&cons, NULL, consumer, NULL);
+	pthread_create(&prod, NULL, producer, NULL);
+
+	pthread_join(&cons, NULL);
+	pthread_join(&prod, NULL);
+
+	pthread_mutex_destroy(&mutex);
+	pthread_cond_destroy(&condc);
+	pthread_cond_destroy(&condp);
+	return 0;
+}
+
